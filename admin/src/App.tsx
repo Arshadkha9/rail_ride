@@ -1,0 +1,41 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from '@/context/AuthContext';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { LoginPage } from '@/pages/LoginPage';
+import { DashboardPage } from '@/pages/DashboardPage';
+import { UsersPage } from '@/pages/UsersPage';
+import { DriversPage } from '@/pages/DriversPage';
+import { RidesPage } from '@/pages/RidesPage';
+import { RevenuePage } from '@/pages/RevenuePage';
+import { NotificationsPage } from '@/pages/NotificationsPage';
+import { ComplaintsPage } from '@/pages/ComplaintsPage';
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="drivers" element={<DriversPage />} />
+            <Route path="rides" element={<RidesPage />} />
+            <Route path="revenue" element={<RevenuePage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="complaints" element={<ComplaintsPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}

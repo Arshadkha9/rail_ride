@@ -1,0 +1,82 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: railride_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: railride
+      POSTGRES_PASSWORD: railride_secret
+      POSTGRES_DB: railride
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U railride -d railride"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: railride_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: railride_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: RailRide
+      APP_ENV: development
+      DEBUG: "true"
+      API_V1_PREFIX: /api/v1
+      DATABASE_URL: postgresql+asyncpg://railride:railride_secret@db:5432/railride
+      DATABASE_URL_SYNC: postgresql://railride:railride_secret@db:5432/railride
+      REDIS_URL: redis://redis:6379/0
+      REDIS_CACHE_TTL: 300
+      SECRET_KEY: change-this-to-a-long-random-secret-key-in-production
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
+      OTP_EXPIRE_MINUTES: 10
+      OTP_LENGTH: 6
+      CORS_ORIGINS: '["http://localhost:3000","http://localhost:3001","http://localhost:8080"]'
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: railride_admin
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
