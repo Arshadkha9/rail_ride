@@ -53,7 +53,7 @@ export function UsersPage() {
   const { mutate: suspendMutate } = useMutation(suspendUser);
   const { mutate: activateMutate } = useMutation(activateUser);
   const { mutate: deleteMutate } = useMutation(deleteUser);
-  console.log("data",data)
+  console.log(data)
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearch(searchInput);
@@ -102,13 +102,13 @@ export function UsersPage() {
         </div>
       ),
     },
-    { key: 'phone', header: 'Phone' },
+    { key: 'mobile', header: 'Phone' },
     {
-      key: 'status',
+      key: 'is_active',
       header: 'Status',
       render: (user) => (
-        <Badge variant={getStatusBadgeVariant(user.status)} dot>
-          {user.status}
+        <Badge variant={getStatusBadgeVariant(user.is_active ?'active':'inactive')} dot>
+          {user.is_active ? 'Active' : 'Inactive'}
         </Badge>
       ),
     },
@@ -171,7 +171,7 @@ export function UsersPage() {
       <Card padding="none">
         <Table
           columns={columns}
-          data={data?.items ?? []}
+          data={data ?? []}
           keyExtractor={(u) => u.id}
           loading={loading}
           emptyMessage="No users found"

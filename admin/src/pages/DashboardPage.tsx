@@ -18,6 +18,7 @@ function formatCurrency(value: number): string {
 
 export function DashboardPage() {
   const { data: stats, loading: statsLoading } = useApi(getDashboardStats);
+  console.log(stats);
   const { data: revenue, loading: revenueLoading } = useApi(() => getRevenueAnalytics('7d'));
 
   if (statsLoading && !stats) {
