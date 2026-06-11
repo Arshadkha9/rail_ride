@@ -53,6 +53,7 @@ export function DriversPage() {
   );
 
   const { data, loading, refetch } = useApi(fetchDrivers, [page, search, statusFilter]);
+  console.log(data,"drivers data");
   const { mutate: createMutate, loading: creating } = useMutation(createDriver);
   const { mutate: approveMutate } = useMutation(approveDriver);
   const { mutate: suspendMutate } = useMutation(suspendDriver);
@@ -99,15 +100,15 @@ export function DriversPage() {
         </div>
       ),
     },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (driver) => (
-        <Badge variant={getStatusBadgeVariant(driver.status)} dot>
-          {driver.status.replace('_', ' ')}
-        </Badge>
-      ),
-    },
+    // {
+    //   key: 'status',
+    //   header: 'Status',
+    //   render: (driver) => (
+    //     <Badge variant={getStatusBadgeVariant(driver.status)} dot>
+    //       {driver.status.replace('_', ' ')}
+    //     </Badge>
+    //   ),
+    // },
     {
       key: 'rating',
       header: 'Rating',
@@ -119,11 +120,11 @@ export function DriversPage() {
       ),
     },
     { key: 'total_rides', header: 'Rides', align: 'center' },
-    {
-      key: 'created_at',
-      header: 'Joined',
-      render: (driver) => format(parseISO(driver.created_at), 'MMM d, yyyy'),
-    },
+    // {
+    //   key: 'created_at',
+    //   header: 'Joined',
+    //   render: (driver) => format(parseISO(driver.created_at), 'MMM d, yyyy'),
+    // },
     {
       key: 'actions',
       header: 'Actions',
@@ -183,7 +184,7 @@ export function DriversPage() {
       <Card padding="none">
         <Table
           columns={columns}
-          data={data?.items ?? []}
+          data={data ?? []}
           keyExtractor={(d) => d.id}
           loading={loading}
           emptyMessage="No drivers found"

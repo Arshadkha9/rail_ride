@@ -68,7 +68,7 @@ export function Pagination({
             </span>
           ) : (
             <button
-              key={p}
+              key={`page-${p}-${idx}`}
               className={`pagination-page ${p === page ? 'active' : ''}`}
               onClick={() => onPageChange(p)}
             >
